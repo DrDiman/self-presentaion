@@ -31,8 +31,9 @@
     --white: #FFFFFF;
     --line: #DDD8CE;
     --teal: #1A6B78;
+    --teal-fill: #1A6B78;
     --teal-soft: #E7F1F3;
-    --gold: #9A7348;
+    --gold: #7A5C38;
     --gold-soft: #F3EBE0;
     --photo-bg: #163047;
     --frame-shadow: 0 8px 32px rgba(13, 33, 55, 0.08), 0 2px 6px rgba(13, 33, 55, 0.04);
@@ -76,6 +77,34 @@
     counter-increment: slide;
   }
   .slide-frame:last-child { margin-bottom: 0; }
+
+  .skip-link {
+    position: absolute;
+    left: 12px;
+    top: -48px;
+    z-index: 100;
+    padding: 8px 14px;
+    background: var(--navy);
+    color: var(--paper);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+  .skip-link:focus {
+    top: 12px;
+    outline: 2px solid var(--teal);
+    outline-offset: 3px;
+  }
+  #main:focus {
+    outline: none;
+  }
+
+  .site-toolbar {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
 
   .slide {
     position: absolute;
@@ -208,15 +237,16 @@
     width: 400px; height: 520px;
     background: var(--photo-bg);
     border: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
+    overflow: hidden;
   }
-  .photo-icon {
-    width: 96px; height: 96px;
-    stroke-width: 1.2;
+  .photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 28%;
   }
+  .cover-meta { display: contents; }
 
   /* Slide 2 — intro */
   .intro-grid {
@@ -236,12 +266,13 @@
     align-items: center;
     justify-content: center;
     height: 108px;
+    margin: 0;
     font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
     font-size: 32px;
     font-weight: 600;
     letter-spacing: -0.3px;
     color: var(--paper);
-    background: var(--teal);
+    background: var(--teal-fill);
   }
   .intro-label--delivery {
     background: var(--teal-soft);
@@ -528,12 +559,14 @@
     left: 80px;
     right: 80px;
     top: 470px;
+    margin: 0;
     padding: 22px 28px;
     border-left: 3px solid var(--gold);
     background: var(--gold-soft);
     display: flex;
     flex-direction: column;
     gap: 8px;
+    quotes: none;
   }
   .rec-quote__label {
     font-size: 12px;
@@ -567,13 +600,32 @@
     position: absolute;
     left: 80px;
     bottom: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
     font-size: 12px;
     line-height: 1.5;
     color: var(--muted);
     letter-spacing: 0.2px;
-    text-align: left;
+    text-align: right;
   }
-  .contact-footer a { color: inherit; text-decoration: none; }
+  .contact-footer a {
+    color: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+  .contact-footer a:hover,
+  .close-contacts a:hover {
+    text-decoration: underline;
+  }
+  .contact-footer a:focus-visible,
+  .close-contacts a:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 3px;
+  }
 
   /* Slide 8 — closing */
   .close-heading {
@@ -649,7 +701,13 @@
     margin: 0;
     letter-spacing: -0.2px;
   }
-  .close-contacts dd a { color: inherit; text-decoration: none; }
+  .close-contacts dd a {
+    color: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
 
   /* Easter egg — Clawd (Claude Code crab) */
   .clawd-egg {
@@ -943,9 +1001,8 @@
       height: 240px;
       margin: 0 0 20px 0;
     }
-    #slide-1 .photo-icon {
-      width: 72px;
-      height: 72px;
+    #slide-1 .photo img {
+      object-position: center center;
     }
     #slide-1 .date {
       font-size: 15px;
@@ -957,6 +1014,7 @@
     }
     #slide-1 .contact-footer {
       text-align: left;
+      align-items: flex-start;
       font-size: 13px;
       line-height: 1.55;
     }
@@ -1117,10 +1175,12 @@
       --line: #DDD8CE;
       --teal: #1A6B78;
       --teal-soft: #E7F1F3;
-      --gold: #9A7348;
+      --gold: #7A5C38;
       --gold-soft: #F3EBE0;
     }
 
+    .skip-link,
+    .site-toolbar,
     .theme-toggle {
       display: none !important;
     }
@@ -1226,43 +1286,79 @@
     }
 
     #slide-1 {
-      display: flex !important;
-      flex-wrap: wrap;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 0.4mm 6mm;
+      display: grid !important;
+      grid-template-columns: 18mm minmax(0, 1fr) auto;
+      column-gap: 3.5mm;
+      row-gap: 0.35mm;
+      align-items: start;
       border-bottom: 1.5px solid #15202B;
-      padding-bottom: 1.8mm;
+      padding-bottom: 2mm;
+      margin: 0;
+    }
+    #slide-1 .photo {
+      display: block !important;
+      grid-column: 1;
+      grid-row: 1 / span 3;
+      position: static !important;
+      transform: none !important;
+      width: 18mm;
+      height: 22mm;
+      margin: 0;
+      border: 0.3pt solid #DDD8CE;
+      overflow: hidden;
+      background: none;
+    }
+    #slide-1 .photo .screen-only {
+      display: none !important;
+    }
+    #slide-1 .photo .print-only {
+      display: block !important;
+      position: static !important;
+      transform: none !important;
+      width: 18mm;
+      height: 22mm;
+      max-width: none;
+      object-fit: cover;
+      object-position: center center;
+    }
+    #slide-1 .level {
+      grid-column: 2 / -1;
+      width: auto !important;
+      font-size: 9pt;
       margin: 0;
     }
     #slide-1 .name {
+      grid-column: 2;
       font-size: 22pt;
       letter-spacing: -0.5px;
       line-height: 1.05;
       margin: 0;
-      flex: 1 1 auto;
       color: #15202B !important;
     }
     #slide-1 .name .name-space { display: inline; }
     #slide-1 .name br { display: none; }
     #slide-1 .contact-footer {
-      display: block !important;
+      display: flex !important;
+      grid-column: 3;
+      grid-row: 2 / span 2;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0;
       text-align: right;
       font-size: 7.5pt;
       line-height: 1.35;
       color: #5E6A75;
     }
-    #slide-1 .level {
-      width: 100% !important;
-      font-size: 9pt;
-      margin: 0;
-      order: 1;
+    #slide-1 .contact-footer a {
+      min-height: 0;
     }
-    #slide-1 .name { order: 2; }
-    #slide-1 .contact-footer { order: 3; }
-    #slide-1 .role-line { order: 4; }
-    #slide-1 .date { order: 5; }
-    #slide-1 .languages { order: 6; }
+    #slide-1 .cover-meta {
+      display: flex;
+      grid-column: 2;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 2.8mm;
+    }
     #slide-1 .role-line,
     #slide-1 .date,
     #slide-1 .languages {
@@ -1438,10 +1534,17 @@
     }
   }
 </style>
+<noscript>
+  <style>
+    .slide { visibility: visible !important; transform: none !important; }
+  </style>
+</noscript>
 </head>
 <body>
 
-  <button class="theme-toggle" type="button" aria-label="Switch to dark theme">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-toolbar">
+  <button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
     <svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M21 14.3A8.5 8.5 0 0 1 9.7 3 7 7 0 1 0 21 14.3z"/>
     </svg>
@@ -1450,52 +1553,54 @@
       <path d="M12 3v1.5M12 19.5V21M4.9 4.9l1.1 1.1M18 18l1.1 1.1M3 12h1.5M19.5 12H21M4.9 19.1L6 18M18 6l1.1-1.1"/>
     </svg>
   </button>
+  </header>
 
+  <main id="main" tabindex="-1">
   <!-- =========================== Slide 1: Cover =========================== -->
   <div class="slide-frame">
-    <section class="slide slide--dark" id="slide-1">
+    <section class="slide slide--dark" id="slide-1" aria-labelledby="slide-1-title">
       <div class="level">Software Development</div>
-      <div class="photo" role="img" aria-label="Photo placeholder — selfie will go here">
-        <svg class="photo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
+      <div class="photo">
+        <img class="screen-only" src="selfie.jpg" alt="Dzmitry Astraukh standing on a mountain peak at sunset">
+        <img class="print-only" src="selfie-print.jpg" alt="Dzmitry Astraukh">
       </div>
-      <h1 class="name">Dzmitry<span class="name-space"> </span><br>Astraukh</h1>
-      <div class="role-line">Team Lead &middot; Key Engineer</div>
-      <div class="date">August 2026</div>
-      <div class="languages">English &middot; Belarusian &middot; Russian</div>
-      <div class="contact-footer">
-        <a href="mailto:d.astraukh@gmail.com?subject=Let%27s%20talk%20about%20what%27s%20next" target="_blank" rel="noopener noreferrer">d.astraukh@gmail.com</a><br>
-        <a href="https://www.linkedin.com/in/dzmitry-astraukh-23a356173/" target="_blank" rel="noopener noreferrer">linkedin.com/in/dzmitry-astraukh-23a356173</a><br>
+      <h1 class="name" id="slide-1-title">Dzmitry<span class="name-space"> </span><br>Astraukh</h1>
+      <div class="cover-meta">
+        <div class="role-line">Team Lead &middot; Key Engineer</div>
+        <div class="date">August 2026</div>
+        <div class="languages">English &middot; Belarusian &middot; Russian</div>
+      </div>
+      <nav class="contact-footer" aria-label="Contact">
+        <a href="mailto:d.astraukh@gmail.com?subject=Let%27s%20talk%20about%20what%27s%20next">d.astraukh@gmail.com</a>
+        <a href="https://www.linkedin.com/in/dzmitry-astraukh-23a356173/" target="_blank" rel="noopener noreferrer">linkedin.com/in/dzmitry-astraukh-23a356173</a>
         <a href="https://github.com/DrDiman" target="_blank" rel="noopener noreferrer">github.com/DrDiman</a>
-      </div>
+      </nav>
     </section>
   </div>
 
   <!-- =========================== Slide 2: Intro =========================== -->
   <div class="slide-frame">
-    <section class="slide" id="slide-2">
+    <section class="slide" id="slide-2" aria-labelledby="slide-2-title">
       <div class="accent-bar"></div>
-      <div class="slide-num"></div>
+      <div class="slide-num" aria-hidden="true"></div>
       <p class="kicker">Intro</p>
-      <h2 class="headline">Hi, I&rsquo;m Dima</h2>
+      <h2 class="headline" id="slide-2-title">Hi, I&rsquo;m Dima</h2>
       <div class="head-rule"></div>
 
       <div class="intro-grid">
-        <div class="intro-label">Development</div>
+        <h3 class="intro-label">Development</h3>
         <ul class="bullets">
           <li>7+ years of experience</li>
           <li>React &middot; TypeScript &middot; Node.js</li>
         </ul>
 
-        <div class="intro-label intro-label--delivery">Delivery</div>
+        <h3 class="intro-label intro-label--delivery">Delivery</h3>
         <ul class="bullets">
           <li>5 projects across 4 clients</li>
           <li>Intelligent Document Processing Domain</li>
         </ul>
 
-        <div class="intro-label intro-label--leadership">Leadership</div>
+        <h3 class="intro-label intro-label--leadership">Leadership</h3>
         <ul class="bullets">
           <li>Team Lead &mdash; teams up to 8 engineers</li>
           <li>Presales, discovery &amp; interviewing</li>
@@ -1506,11 +1611,11 @@
 
   <!-- =========================== Slide 3: Technologies =========================== -->
   <div class="slide-frame">
-    <section class="slide" id="slide-3">
+    <section class="slide" id="slide-3" aria-labelledby="slide-3-title">
       <div class="accent-bar"></div>
-      <div class="slide-num"></div>
+      <div class="slide-num" aria-hidden="true"></div>
       <p class="kicker">Intro</p>
-      <h2 class="headline">Technologies</h2>
+      <h2 class="headline" id="slide-3-title">Technologies</h2>
       <div class="head-rule"></div>
 
       <div class="tech-groups">
@@ -1519,31 +1624,31 @@
           <h3 class="tech-group__label">Frontend</h3>
           <div class="tech-row">
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/react" alt="React">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/react" alt="">
               <span class="tech-label">React</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/typescript" alt="TypeScript">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/typescript" alt="">
               <span class="tech-label">TypeScript</span>
             </div>
             <div class="tech">
-              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/nextdotjs" alt="Next.js">
+              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/nextdotjs" alt="">
               <span class="tech-label">Next.js</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/redux" alt="RTK Query">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/redux" alt="">
               <span class="tech-label">RTK Query</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/styledcomponents" alt="styled-components">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/styledcomponents" alt="">
               <span class="tech-label">styled-components</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/antdesign" alt="Ant Design">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/antdesign" alt="">
               <span class="tech-label">Ant Design</span>
             </div>
             <div class="tech">
-              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/konva/15202B" alt="Konva">
+              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/konva/15202B" alt="">
               <span class="tech-label">Konva</span>
             </div>
           </div>
@@ -1553,42 +1658,42 @@
           <h3 class="tech-group__label">Platform &amp; data</h3>
           <div class="tech-row">
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/nodedotjs" alt="Node.js">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/nodedotjs" alt="">
               <span class="tech-label">Node.js</span>
             </div>
             <div class="tech">
-              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/express/15202B" alt="Express">
+              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/express/15202B" alt="">
               <span class="tech-label">Express</span>
             </div>
             <div class="tech">
-              <svg class="tech-mark" width="56" height="42" viewBox="0 0 304 182" xmlns="http://www.w3.org/2000/svg" aria-label="AWS">
+              <svg class="tech-mark" width="56" height="42" viewBox="0 0 304 182" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                 <text x="152" y="105" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="100" font-weight="900" fill="currentColor">aws</text>
                 <path d="M 32 145 C 90 180, 214 180, 272 145" stroke="#FF9900" stroke-width="14" fill="none" stroke-linecap="round"/>
               </svg>
               <span class="tech-label">AWS</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg" alt="Azure">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg" alt="">
               <span class="tech-label">Azure</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/databricks" alt="Databricks">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/databricks" alt="">
               <span class="tech-label">Databricks</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/mongodb" alt="MongoDB">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/mongodb" alt="">
               <span class="tech-label">MongoDB</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/postgresql" alt="PostgreSQL">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/postgresql" alt="">
               <span class="tech-label">PostgreSQL</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/sentry" alt="Sentry">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/sentry" alt="">
               <span class="tech-label">Sentry</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/anthropic" alt="Anthropic">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/anthropic" alt="">
               <span class="tech-label">Claude Code</span>
             </div>
           </div>
@@ -1598,35 +1703,35 @@
           <h3 class="tech-group__label">Engineering</h3>
           <div class="tech-row">
             <div class="tech">
-              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/github" alt="GitHub">
+              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/github" alt="">
               <span class="tech-label">GitHub</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/gitlab" alt="GitLab">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/gitlab" alt="">
               <span class="tech-label">GitLab</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VS Code">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="">
               <span class="tech-label">VS Code</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/cursor" alt="Cursor">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/cursor" alt="">
               <span class="tech-label">Cursor</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/docker" alt="Docker">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/docker" alt="">
               <span class="tech-label">Docker</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/vite" alt="Vite">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/vite" alt="">
               <span class="tech-label">Vite</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/webpack" alt="Webpack">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/webpack" alt="">
               <span class="tech-label">Webpack</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/jest" alt="Jest">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/jest" alt="">
               <span class="tech-label">Jest</span>
             </div>
           </div>
@@ -1636,27 +1741,27 @@
           <h3 class="tech-group__label">Collaboration</h3>
           <div class="tech-row">
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/jira" alt="Jira">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/jira" alt="">
               <span class="tech-label">Jira</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/confluence" alt="Confluence">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/confluence" alt="">
               <span class="tech-label">Confluence</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/figma" alt="Figma">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/figma" alt="">
               <span class="tech-label">Figma</span>
             </div>
             <div class="tech">
-              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/tldraw/15202B" alt="tldraw">
+              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/tldraw/15202B" alt="">
               <span class="tech-label">tldraw</span>
             </div>
             <div class="tech">
-              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/excalidraw" alt="Excalidraw">
+              <img class="tech-mark" width="42" height="42" src="https://cdn.simpleicons.org/excalidraw" alt="">
               <span class="tech-label">Excalidraw</span>
             </div>
             <div class="tech">
-              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/modelcontextprotocol/15202B" alt="Model Context Protocol">
+              <img class="tech-mark tech-mark--mono" width="42" height="42" src="https://cdn.simpleicons.org/modelcontextprotocol/15202B" alt="">
               <span class="tech-label">MCP</span>
             </div>
           </div>
@@ -1667,11 +1772,11 @@
 
   <!-- =========================== Slide 4: Projects (1/2) — Recent =========================== -->
   <div class="slide-frame">
-    <section class="slide" id="slide-4">
+    <section class="slide" id="slide-4" aria-labelledby="slide-4-title">
       <div class="accent-bar"></div>
-      <div class="slide-num"></div>
+      <div class="slide-num" aria-hidden="true"></div>
       <p class="kicker">Projects</p>
-      <h2 class="headline">Recent Projects</h2>
+      <h2 class="headline" id="slide-4-title">Recent Projects</h2>
       <div class="head-rule"></div>
 
       <div class="project-list">
@@ -1681,7 +1786,7 @@
             <h3 class="project-title">Document Processing on Databricks</h3>
             <div class="duration-block">
               <span class="project-duration">Jun 2026 &ndash; Present &middot; 3 months</span>
-              <div class="mini-timeline">
+              <div class="mini-timeline" aria-hidden="true">
                 <div class="mini-timeline__track"></div>
                 <span class="mini-timeline__bar" style="left:92.71%; width:3.13%;"></span>
                 <div class="mini-timeline__years"><span>2019</span><span>2026</span></div>
@@ -1702,7 +1807,7 @@
             <h3 class="project-title">Dealer Management System</h3>
             <div class="duration-block">
               <span class="project-duration">Jan &ndash; Feb 2026 &middot; Discovery</span>
-              <div class="mini-timeline">
+              <div class="mini-timeline" aria-hidden="true">
                 <div class="mini-timeline__track"></div>
                 <span class="mini-timeline__bar" style="left:87.50%; width:2.08%;"></span>
                 <div class="mini-timeline__years"><span>2019</span><span>2026</span></div>
@@ -1724,11 +1829,11 @@
 
   <!-- =========================== Slide 5: Projects (2/2) — Past =========================== -->
   <div class="slide-frame">
-    <section class="slide" id="slide-5">
+    <section class="slide" id="slide-5" aria-labelledby="slide-5-title">
       <div class="accent-bar"></div>
-      <div class="slide-num"></div>
+      <div class="slide-num" aria-hidden="true"></div>
       <p class="kicker">Projects</p>
-      <h2 class="headline">Past Projects</h2>
+      <h2 class="headline" id="slide-5-title">Past Projects</h2>
       <div class="head-rule"></div>
 
       <div class="project-list">
@@ -1738,7 +1843,7 @@
             <h3 class="project-title">Healthcare Document Processing</h3>
             <div class="duration-block">
               <span class="project-duration">May 2024 &ndash; Jan 2025 &middot; 9 months</span>
-              <div class="mini-timeline">
+              <div class="mini-timeline" aria-hidden="true">
                 <div class="mini-timeline__track"></div>
                 <span class="mini-timeline__bar" style="left:66.67%; width:9.38%;"></span>
                 <div class="mini-timeline__years"><span>2019</span><span>2026</span></div>
@@ -1759,7 +1864,7 @@
             <h3 class="project-title">Document Extraction and Processing System (DEPS Platform)</h3>
             <div class="duration-block">
               <span class="project-duration">Jun 2019 &ndash; Present &middot; 7+ years</span>
-              <div class="mini-timeline">
+              <div class="mini-timeline" aria-hidden="true">
                 <div class="mini-timeline__track"></div>
                 <span class="mini-timeline__bar" style="left:5.21%; width:90.63%;"></span>
                 <div class="mini-timeline__years"><span>2019</span><span>2026</span></div>
@@ -1782,11 +1887,11 @@
 
   <!-- =========================== Slide 6: Recently Learned =========================== -->
   <div class="slide-frame screen-only">
-    <section class="slide" id="slide-6">
+    <section class="slide" id="slide-6" aria-labelledby="slide-6-title">
       <div class="accent-bar"></div>
-      <div class="slide-num"></div>
+      <div class="slide-num" aria-hidden="true"></div>
       <p class="kicker">Learning</p>
-      <h2 class="headline">Recently Learned</h2>
+      <h2 class="headline" id="slide-6-title">Recently Learned</h2>
       <div class="head-rule"></div>
 
       <div class="cert-cols">
@@ -1827,11 +1932,11 @@
 
   <!-- =========================== Slide 7: Recognition =========================== -->
   <div class="slide-frame">
-    <section class="slide" id="slide-7">
+    <section class="slide" id="slide-7" aria-labelledby="slide-7-title">
       <div class="accent-bar"></div>
-      <div class="slide-num"></div>
+      <div class="slide-num" aria-hidden="true"></div>
       <p class="kicker">Impact</p>
-      <h2 class="headline">Recognized For&hellip;</h2>
+      <h2 class="headline" id="slide-7-title">Recognized For&hellip;</h2>
       <div class="head-rule"></div>
 
       <p class="rec-summary print-only">Lots of recognitions over 7 years, including a CEO Award.</p>
@@ -1865,27 +1970,27 @@
         </div>
       </div>
 
-      <aside class="rec-quote">
+      <blockquote class="rec-quote">
         <p class="rec-quote__label">Featured &middot; CEO Award &middot; 2024 Impact on Clients &amp; Technology</p>
         <p class="rec-quote__text">Dzmitry, thank you for your exceptional technical leadership and dedication on the project. Your initiative in creating proof of concepts and consulting with clients has greatly enhanced relationships and opened new opportunities. Your POC enabled the retention of multiple positions beyond the initial project scope. This remarkable effort has significantly impacted the client relationship, strengthened EPAM&rsquo;s reputation, and created a pathway for future engagement and revenue growth.</p>
-        <p class="rec-quote__from">Arkadiy Dobkin &mdash; Founder &amp; CEO</p>
-      </aside>
+        <footer class="rec-quote__from">Arkadiy Dobkin &mdash; Founder &amp; CEO</footer>
+      </blockquote>
     </section>
   </div>
 
   <!-- =========================== Slide 8: Closing =========================== -->
   <div class="slide-frame">
-    <section class="slide slide--dark" id="slide-8">
+    <section class="slide slide--dark" id="slide-8" aria-labelledby="slide-8-title">
       <div class="accent-bar"></div>
 
-      <h1 class="close-heading">Thank you.</h1>
+      <h2 class="close-heading" id="slide-8-title">Thank you.</h2>
       <p class="close-role">Team Lead &middot; Key Engineer</p>
       <p class="close-tagline">Happy to talk about what&rsquo;s next.</p>
       <p class="close-signoff">&mdash; Dima</p>
 
       <dl class="close-contacts">
         <dt>Email</dt>
-        <dd><a href="mailto:d.astraukh@gmail.com?subject=Let%27s%20talk%20about%20what%27s%20next" target="_blank" rel="noopener noreferrer">d.astraukh@gmail.com</a></dd>
+        <dd><a href="mailto:d.astraukh@gmail.com?subject=Let%27s%20talk%20about%20what%27s%20next">d.astraukh@gmail.com</a></dd>
 
         <dt>LinkedIn</dt>
         <dd><a href="https://www.linkedin.com/in/dzmitry-astraukh-23a356173/" target="_blank" rel="noopener noreferrer">linkedin.com/in/dzmitry-astraukh-23a356173</a></dd>
@@ -1895,6 +2000,7 @@
       </dl>
     </section>
   </div>
+  </main>
 
   <script>
     (function () {
@@ -1910,6 +2016,7 @@
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.style.colorScheme = theme;
         if (button) {
+          button.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
           button.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
         }
       }
@@ -2001,8 +2108,11 @@
 
       function onKey(event) {
         if (event.metaKey || event.ctrlKey || event.altKey) return;
-        var tag = (event.target && event.target.tagName) || '';
-        if (tag === 'INPUT' || tag === 'TEXTAREA' || (event.target && event.target.isContentEditable)) return;
+        var el = event.target;
+        if (!el) return;
+        var tag = (el.tagName || '').toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON' || tag === 'A' || el.isContentEditable) return;
+        if (el.closest && el.closest('a, button, input, textarea, select, [contenteditable="true"]')) return;
 
         var key = event.key;
         if (key === 'ArrowRight' || key === 'ArrowDown' || key === 'PageDown' || key === ' ' || key === 'Spacebar') {
@@ -2017,9 +2127,6 @@
         } else if (key === 'End') {
           event.preventDefault();
           go(frames.length - 1);
-        } else if (/^[1-8]$/.test(key)) {
-          event.preventDefault();
-          go(parseInt(key, 10) - 1);
         }
       }
 
@@ -2180,7 +2287,8 @@
 
         spawnClawd(x, y);
 
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var isKeyboard = event.detail === 0;
+        if (isKeyboard || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
         event.preventDefault();
         window.setTimeout(function () {
