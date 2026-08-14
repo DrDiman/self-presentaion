@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Dzmitry Astraukh">
+  <style>
+    .bg { fill: #0D2137; }
+    .bar { fill: #1A6B78; }
+    .letter { fill: #F4F1EA; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #0A1622; }
+      .bar { fill: #7EC8D0; }
+      .letter { fill: #E8EEF2; }
+    }
+  </style>
+  <defs>
+    <clipPath id="r"><rect width="32" height="32" rx="6"/></clipPath>
+  </defs>
+  <g clip-path="url(#r)">
+    <rect class="bg" width="32" height="32"/>
+    <rect class="bar" width="4" height="32"/>
+  </g>
+  <path class="letter" d="M11.4 7.8h6.4c4.4 0 7.1 2.5 7.1 8.2s-2.7 8.2-7.1 8.2h-6.4V7.8zm3.2 2.7v10.9h3.3c2.5 0 3.75-1.55 3.75-5.45s-1.25-5.45-3.75-5.45h-3.3z"/>
+</svg>
