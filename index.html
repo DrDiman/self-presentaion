@@ -2,24 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>Dzmitry Astraukh — Self-Presentation</title>
 <script>
   (function () {
     var key = 'preza-theme';
     var stored = null;
     try { stored = localStorage.getItem(key); } catch (e) {}
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     var theme = (stored === 'light' || stored === 'dark')
       ? stored
-      : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      : (prefersDark ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.style.colorScheme = theme;
+    try { document.documentElement.style.colorScheme = theme; } catch (e) {}
+    var view = 'slides';
+    try {
+      var mobile = window.matchMedia && window.matchMedia('(max-width: 1366px), (hover: none) and (pointer: coarse)').matches;
+      var match = String(location.search || '').match(/[?&]view=([^&]*)/);
+      if (!mobile && match && decodeURIComponent(match[1].replace(/\+/g, ' ')) === 'onepager') view = 'onepager';
+    } catch (e) {}
+    document.documentElement.setAttribute('data-view', view);
   })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     color-scheme: light;
@@ -52,29 +61,70 @@
     --gold-soft: #2C261C;
     --frame-shadow: 0 8px 32px rgba(0, 0, 0, 0.38);
   }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme]) {
+      color-scheme: dark;
+      --ink: #E8EEF2;
+      --muted: #9AA8B4;
+      --page: #0A1622;
+      --white: #152A3C;
+      --line: rgba(232, 238, 242, 0.14);
+      --teal: #7EC8D0;
+      --teal-soft: #1A3D46;
+      --gold: #C4A574;
+      --gold-soft: #2C261C;
+      --frame-shadow: 0 8px 32px rgba(0, 0, 0, 0.38);
+    }
+  }
 
-  * { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
   body {
     font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     color: var(--ink);
     background: var(--page);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
     padding: 24px 0;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
     counter-reset: slide;
+  }
+  img {
+    border: 0;
+  }
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
   }
 
   .slide-frame {
     position: relative;
     width: 100%;
     max-width: 1600px;
-    aspect-ratio: 16 / 9;
+    height: 0;
+    padding-bottom: 56.25%;
     margin: 0 auto 24px auto;
     overflow: hidden;
     background: var(--white);
     box-shadow: var(--frame-shadow);
     counter-increment: slide;
+  }
+  @supports (aspect-ratio: 16 / 9) {
+    .slide-frame {
+      height: auto;
+      padding-bottom: 0;
+      aspect-ratio: 16 / 9;
+    }
   }
   .slide-frame:last-child { margin-bottom: 0; }
 
@@ -101,6 +151,14 @@
   }
 
   .site-toolbar {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    top: max(12px, env(safe-area-inset-top, 0px));
+    right: max(12px, env(safe-area-inset-right, 0px));
+    z-index: 50;
+    display: flex;
+    gap: 8px;
     margin: 0;
     padding: 0;
     border: 0;
@@ -114,6 +172,9 @@
     background: var(--white);
     overflow: hidden;
     transform-origin: top left;
+    -webkit-transform-origin: top left;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
     visibility: hidden;
   }
   .slide--dark {
@@ -232,7 +293,8 @@
   }
   .photo {
     position: absolute;
-    right: 80px; top: 50%;
+    right: 80px;     top: 50%;
+    -webkit-transform: translateY(-50%);
     transform: translateY(-50%);
     width: 400px; height: 520px;
     background: var(--photo-bg);
@@ -246,7 +308,7 @@
     object-fit: cover;
     object-position: center 28%;
   }
-  .cover-meta { display: contents; }
+  .cover-meta { display: block; }
 
   /* Slide 2 — intro */
   .intro-grid {
@@ -333,8 +395,16 @@
     flex-shrink: 0;
   }
   html[data-theme="dark"] .tech-mark--mono {
+    -webkit-filter: brightness(0) invert(1);
     filter: brightness(0) invert(1);
     opacity: 0.88;
+  }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme]) .tech-mark--mono {
+      -webkit-filter: brightness(0) invert(1);
+      filter: brightness(0) invert(1);
+      opacity: 0.88;
+    }
   }
   .tech-label {
     font-size: 12px;
@@ -621,8 +691,23 @@
   .close-contacts a:hover {
     text-decoration: underline;
   }
+  .contact-footer a:focus,
+  .close-contacts a:focus,
+  .theme-toggle:focus,
+  .view-toggle:focus {
+    outline: 2px solid var(--teal);
+    outline-offset: 3px;
+  }
+  .contact-footer a:focus:not(:focus-visible),
+  .close-contacts a:focus:not(:focus-visible),
+  .theme-toggle:focus:not(:focus-visible),
+  .view-toggle:focus:not(:focus-visible) {
+    outline: none;
+  }
   .contact-footer a:focus-visible,
-  .close-contacts a:focus-visible {
+  .close-contacts a:focus-visible,
+  .theme-toggle:focus-visible,
+  .view-toggle:focus-visible {
     outline: 2px solid var(--teal);
     outline-offset: 3px;
   }
@@ -718,6 +803,9 @@
     width: 108px;
     height: 88px;
     pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
   }
   .clawd-egg__inner {
@@ -733,9 +821,13 @@
     width: 100%;
     height: 100%;
     overflow: visible;
+    -webkit-filter: drop-shadow(0 8px 10px rgba(13, 33, 55, 0.28));
     filter: drop-shadow(0 8px 10px rgba(13, 33, 55, 0.28));
   }
-  .clawd-egg--flip .clawd-svg { transform: scaleX(-1); }
+  .clawd-egg--flip .clawd-svg {
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+  }
 
   .clawd-bubble {
     position: absolute;
@@ -851,11 +943,9 @@
 
   .print-only { display: none; }
 
-  .theme-toggle {
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    z-index: 50;
+  .theme-toggle,
+  .view-toggle {
+    position: relative;
     width: 36px;
     height: 36px;
     padding: 0;
@@ -868,16 +958,19 @@
     align-items: center;
     justify-content: center;
     box-shadow: var(--frame-shadow);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  .theme-toggle:hover {
+  .theme-toggle:hover,
+  .view-toggle:hover {
     border-color: var(--teal);
     color: var(--teal);
   }
-  .theme-toggle:focus-visible {
-    outline: 2px solid var(--teal);
-    outline-offset: 3px;
-  }
-  .theme-toggle svg {
+  .theme-toggle svg,
+  .view-toggle svg {
     width: 16px;
     height: 16px;
     fill: none;
@@ -887,15 +980,59 @@
     stroke-linejoin: round;
   }
   .theme-toggle__sun,
-  .theme-toggle__moon {
+  .theme-toggle__moon,
+  .view-toggle__page,
+  .view-toggle__slides {
     display: none;
   }
-  html[data-theme="light"] .theme-toggle__moon { display: block; fill: currentColor; stroke: none; }
+  html[data-theme="light"] .theme-toggle__moon,
+  html:not([data-theme]) .theme-toggle__moon { display: block; fill: currentColor; stroke: none; }
   html[data-theme="dark"] .theme-toggle__sun { display: block; }
+  html[data-view="onepager"] .view-toggle__slides { display: block; }
+  html:not([data-view="onepager"]) .view-toggle__page { display: block; }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme]) .theme-toggle__moon { display: none; fill: none; stroke: currentColor; }
+    html:not([data-theme]) .theme-toggle__sun { display: block; }
+  }
+
+  @media screen and (max-width: 1366px),
+         screen and (hover: none) and (pointer: coarse) {
+    .site-toolbar,
+    .view-toggle {
+      display: none !important;
+    }
+  }
+
+  @media screen {
+    html[data-view="onepager"] body {
+      padding: 56px 20px 40px !important;
+      padding-top: max(56px, calc(env(safe-area-inset-top, 0px) + 44px)) !important;
+      padding-bottom: max(40px, env(safe-area-inset-bottom, 0px)) !important;
+      background: #E8E4DC !important;
+    }
+    html[data-theme="dark"][data-view="onepager"] body {
+      background: #0A1622 !important;
+    }
+    html[data-view="onepager"] #main {
+      max-width: 210mm;
+      margin: 0 auto;
+      background: #fff;
+      padding: 8mm 10mm;
+      box-shadow: var(--frame-shadow);
+    }
+    html[data-view="onepager"] .slide,
+    html[data-view="onepager"] .slide--dark {
+      padding: 0 !important;
+    }
+  }
 
   @media screen and (max-width: 900px) {
     body {
       padding: 16px 14px 28px;
+      padding-top: max(16px, env(safe-area-inset-top, 0px));
+      padding-bottom: max(28px, env(safe-area-inset-bottom, 0px));
+      padding-left: max(14px, env(safe-area-inset-left, 0px));
+      padding-right: max(14px, env(safe-area-inset-right, 0px));
     }
 
     .slide-frame {
@@ -903,6 +1040,7 @@
       max-width: none;
       aspect-ratio: auto;
       height: auto;
+      padding-bottom: 0;
       overflow: visible;
       margin: 0 auto 16px auto;
     }
@@ -914,6 +1052,7 @@
       width: auto;
       height: auto;
       min-height: 0;
+      -webkit-transform: none !important;
       transform: none !important;
       visibility: visible;
       overflow: visible;
@@ -949,6 +1088,7 @@
       right: auto !important;
       top: auto !important;
       bottom: auto !important;
+      -webkit-transform: none !important;
       transform: none !important;
       width: auto;
       height: auto;
@@ -1019,7 +1159,8 @@
       line-height: 1.55;
     }
     #slide-1 .contact-footer a {
-      overflow-wrap: anywhere;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
       word-break: break-word;
     }
 
@@ -1137,7 +1278,8 @@
       font-size: 16px;
     }
     .close-contacts dd a {
-      overflow-wrap: anywhere;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
       word-break: break-word;
     }
   }
@@ -1160,6 +1302,15 @@
       margin: 6mm 8mm;
     }
 
+    .skip-link,
+    .site-toolbar,
+    .theme-toggle,
+    .view-toggle {
+      display: none !important;
+    }
+  }
+</style>
+<style id="onepager-style" media="print">
     html {
       color-scheme: light !important;
     }
@@ -1179,12 +1330,6 @@
       --gold-soft: #F3EBE0;
     }
 
-    .skip-link,
-    .site-toolbar,
-    .theme-toggle {
-      display: none !important;
-    }
-
     html, body {
       background: #fff !important;
       padding: 0 !important;
@@ -1192,6 +1337,7 @@
       color: #15202B;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
+      color-adjust: exact;
     }
 
     .slide-frame {
@@ -1200,6 +1346,7 @@
       height: auto !important;
       min-height: 0 !important;
       aspect-ratio: auto !important;
+      padding-bottom: 0 !important;
       margin: 0 0 6mm 0 !important;
       box-shadow: none !important;
       overflow: visible !important;
@@ -1222,6 +1369,7 @@
       width: auto !important;
       height: auto !important;
       min-height: 0 !important;
+      -webkit-transform: none !important;
       transform: none !important;
       visibility: visible !important;
       overflow: visible !important;
@@ -1271,6 +1419,7 @@
       right: auto !important;
       top: auto !important;
       bottom: auto !important;
+      -webkit-transform: none !important;
       transform: none !important;
       width: auto !important;
       height: auto !important;
@@ -1300,6 +1449,7 @@
       grid-column: 1;
       grid-row: 1 / span 3;
       position: static !important;
+      -webkit-transform: none !important;
       transform: none !important;
       width: 18mm;
       height: 22mm;
@@ -1314,12 +1464,15 @@
     #slide-1 .photo .print-only {
       display: block !important;
       position: static !important;
+      -webkit-transform: none !important;
       transform: none !important;
       width: 18mm;
       height: 22mm;
       max-width: none;
       object-fit: cover;
       object-position: center center;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
     #slide-1 .level {
       grid-column: 2 / -1;
@@ -1532,11 +1685,18 @@
       content: "  \00b7  ";
       color: #5E6A75;
     }
-  }
 </style>
+<script>
+  (function () {
+    var style = document.getElementById('onepager-style');
+    if (style && document.documentElement.getAttribute('data-view') === 'onepager') {
+      style.media = 'all';
+    }
+  })();
+</script>
 <noscript>
   <style>
-    .slide { visibility: visible !important; transform: none !important; }
+    .slide { visibility: visible !important; transform: none !important; -webkit-transform: none !important; }
   </style>
 </noscript>
 </head>
@@ -1544,6 +1704,17 @@
 
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-toolbar">
+  <button class="view-toggle" type="button" aria-label="Show one-pager" aria-pressed="false">
+    <svg class="view-toggle__page" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 3.5h7.5L19 8v12.5H7z"/>
+      <path d="M14.5 3.5V8H19"/>
+      <path d="M10 12.5h4.5M10 16h4.5"/>
+    </svg>
+    <svg class="view-toggle__slides" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="2.5" y="5" width="19" height="12" rx="1.5"/>
+      <path d="M7 20.5h10"/>
+    </svg>
+  </button>
   <button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
     <svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M21 14.3A8.5 8.5 0 0 1 9.7 3 7 7 0 1 0 21 14.3z"/>
@@ -2004,9 +2175,25 @@
 
   <script>
     (function () {
+      if (!Element.prototype.matches) {
+        Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+      }
+      if (!Element.prototype.closest) {
+        Element.prototype.closest = function (sel) {
+          var el = this;
+          while (el && el.nodeType === 1) {
+            if (el.matches(sel)) return el;
+            el = el.parentElement || el.parentNode;
+          }
+          return null;
+        };
+      }
+    })();
+
+    (function () {
       var key = 'preza-theme';
       var button = document.querySelector('.theme-toggle');
-      var system = window.matchMedia('(prefers-color-scheme: dark)');
+      var system = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 
       function current() {
         return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
@@ -2014,7 +2201,7 @@
 
       function apply(theme) {
         document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.style.colorScheme = theme;
+        try { document.documentElement.style.colorScheme = theme; } catch (e) {}
         if (button) {
           button.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
           button.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
@@ -2040,24 +2227,103 @@
         if (saved === 'light' || saved === 'dark') return;
         apply(event.matches ? 'dark' : 'light');
       }
-      if (system.addEventListener) system.addEventListener('change', onSystem);
-      else if (system.addListener) system.addListener(onSystem);
+      if (system) {
+        if (system.addEventListener) system.addEventListener('change', onSystem);
+        else if (system.addListener) system.addListener(onSystem);
+      }
+    })();
+
+    (function () {
+      var button = document.querySelector('.view-toggle');
+      var style = document.getElementById('onepager-style');
+      var mobileMq = window.matchMedia ? window.matchMedia('(max-width: 1366px), (hover: none) and (pointer: coarse)') : { matches: false };
+
+      function isMobile() {
+        return !!mobileMq.matches;
+      }
+
+      function isOnepager() {
+        return document.documentElement.getAttribute('data-view') === 'onepager';
+      }
+
+      function apply(view) {
+        var onepager = view === 'onepager' && !isMobile();
+        document.documentElement.setAttribute('data-view', onepager ? 'onepager' : 'slides');
+        if (style) style.media = onepager ? 'all' : 'print';
+        if (button) {
+          button.setAttribute('aria-pressed', onepager ? 'true' : 'false');
+          button.setAttribute('aria-label', onepager ? 'Show slides' : 'Show one-pager');
+        }
+        if (onepager) {
+          try { window.scrollTo(0, 0); } catch (e) {}
+        }
+        try {
+          var path = location.pathname || '';
+          var search = location.search || '';
+          var hash = location.hash || '';
+          var nextSearch;
+          if (onepager) {
+            if (/[?&]view=/.test(search)) {
+              nextSearch = search.replace(/([?&])view=[^&]*/, function (m, sep) {
+                return sep + 'view=onepager';
+              });
+            } else {
+              nextSearch = search ? search + '&view=onepager' : '?view=onepager';
+            }
+          } else {
+            nextSearch = search.replace(/[?&]view=[^&]*/g, '').replace(/^&/, '?').replace(/[?&]$/, '');
+            if (nextSearch === '?') nextSearch = '';
+          }
+          if (history.replaceState) history.replaceState(null, '', path + nextSearch + hash);
+        } catch (e) {}
+        try {
+          var ev;
+          if (typeof Event === 'function') ev = new Event('preza-view');
+          else {
+            ev = document.createEvent('Event');
+            ev.initEvent('preza-view', false, false);
+          }
+          window.dispatchEvent(ev);
+        } catch (e2) {}
+      }
+
+      apply(isOnepager() ? 'onepager' : 'slides');
+
+      if (button) {
+        button.addEventListener('click', function () {
+          apply(isOnepager() ? 'slides' : 'onepager');
+        });
+      }
+      function onMobileChange() {
+        if (isMobile() && isOnepager()) apply('slides');
+      }
+      if (mobileMq.addEventListener) mobileMq.addEventListener('change', onMobileChange);
+      else if (mobileMq.addListener) mobileMq.addListener(onMobileChange);
     })();
 
     (function () {
       var slides = document.querySelectorAll('.slide');
       var frames = document.querySelectorAll('.slide-frame');
-      var mq = window.matchMedia('(max-width: 900px)');
+      var mq = window.matchMedia ? window.matchMedia('(max-width: 900px)') : { matches: false };
       var index = 0;
       var lockScroll = false;
       var ratios = [];
-      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      var reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+      function setSlideTransform(el, value) {
+        el.style.webkitTransform = value;
+        el.style.transform = value;
+      }
+
+      function isOnepager() {
+        return document.documentElement.getAttribute('data-view') === 'onepager';
+      }
 
       function fit() {
         if (!frames.length) return;
-        if (mq.matches) {
+        if (isOnepager() || mq.matches) {
           for (var i = 0; i < slides.length; i++) {
-            slides[i].style.transform = 'none';
+            setSlideTransform(slides[i], 'none');
             slides[i].style.visibility = 'visible';
           }
           return;
@@ -2065,9 +2331,9 @@
         var w = frames[0].getBoundingClientRect().width;
         if (!w) return;
         var scale = w / 1440;
-        for (var i = 0; i < slides.length; i++) {
-          slides[i].style.transform = 'scale(' + scale + ')';
-          slides[i].style.visibility = 'visible';
+        for (var j = 0; j < slides.length; j++) {
+          setSlideTransform(slides[j], 'scale(' + scale + ')');
+          slides[j].style.visibility = 'visible';
         }
       }
 
@@ -2085,28 +2351,40 @@
 
       function setHash(i) {
         var hash = '#' + (i + 1);
-        if (history.replaceState) history.replaceState(null, '', hash);
-        else location.hash = hash;
+        try {
+          if (history.replaceState) history.replaceState(null, '', hash);
+          else location.hash = hash;
+        } catch (e) {
+          try { location.hash = hash; } catch (e2) {}
+        }
+      }
+
+      function scrollToFrame(el, instant) {
+        var behavior = instant || reduceMotion.matches ? 'auto' : 'smooth';
+        try {
+          el.scrollIntoView({ behavior: behavior, block: 'center' });
+        } catch (e) {
+          try { el.scrollIntoView(true); } catch (e2) {}
+        }
       }
 
       function go(next, opts) {
         opts = opts || {};
         index = Math.max(0, Math.min(frames.length - 1, next));
         for (var i = 0; i < frames.length; i++) {
-          frames[i].classList.toggle('is-active', i === index);
+          if (i === index) frames[i].classList.add('is-active');
+          else frames[i].classList.remove('is-active');
         }
         if (opts.writeHash !== false) setHash(index);
         if (opts.scroll !== false) {
           lockScroll = true;
-          frames[index].scrollIntoView({
-            behavior: opts.instant || reduceMotion.matches ? 'auto' : 'smooth',
-            block: 'center'
-          });
+          scrollToFrame(frames[index], opts.instant);
           window.setTimeout(function () { lockScroll = false; }, 700);
         }
       }
 
       function onKey(event) {
+        if (isOnepager()) return;
         if (event.metaKey || event.ctrlKey || event.altKey) return;
         var el = event.target;
         if (!el) return;
@@ -2115,16 +2393,19 @@
         if (el.closest && el.closest('a, button, input, textarea, select, [contenteditable="true"]')) return;
 
         var key = event.key;
-        if (key === 'ArrowRight' || key === 'ArrowDown' || key === 'PageDown' || key === ' ' || key === 'Spacebar') {
+        var code = event.keyCode || event.which;
+        var nextSlide = key === 'ArrowRight' || key === 'ArrowDown' || key === 'PageDown' || key === ' ' || key === 'Spacebar' || code === 39 || code === 40 || code === 34 || code === 32;
+        var prevSlide = key === 'ArrowLeft' || key === 'ArrowUp' || key === 'PageUp' || key === 'Backspace' || code === 37 || code === 38 || code === 33 || code === 8;
+        if (nextSlide) {
           event.preventDefault();
           go(index + 1);
-        } else if (key === 'ArrowLeft' || key === 'ArrowUp' || key === 'PageUp' || key === 'Backspace') {
+        } else if (prevSlide) {
           event.preventDefault();
           go(index - 1);
-        } else if (key === 'Home') {
+        } else if (key === 'Home' || code === 36) {
           event.preventDefault();
           go(0);
-        } else if (key === 'End') {
+        } else if (key === 'End' || code === 35) {
           event.preventDefault();
           go(frames.length - 1);
         }
@@ -2132,6 +2413,7 @@
 
       window.addEventListener('keydown', onKey);
       window.addEventListener('hashchange', function () {
+        if (isOnepager()) return;
         go(parseHash(), { writeHash: false });
       });
 
@@ -2141,7 +2423,7 @@
             var at = Array.prototype.indexOf.call(frames, entries[i].target);
             if (at !== -1) ratios[at] = entries[i].intersectionRatio;
           }
-          if (lockScroll) return;
+          if (lockScroll || isOnepager()) return;
           var best = 0;
           for (var j = 1; j < frames.length; j++) {
             if ((ratios[j] || 0) > (ratios[best] || 0)) best = j;
@@ -2154,17 +2436,40 @@
 
       window.addEventListener('resize', fit);
       window.addEventListener('load', fit);
+      window.addEventListener('preza-view', function () {
+        fit();
+        if (!isOnepager() && location.hash) go(parseHash(), { instant: true });
+      });
+      window.addEventListener('pageshow', fit);
+      window.addEventListener('orientationchange', function () {
+        window.setTimeout(fit, 250);
+      });
+      if (window.visualViewport && window.visualViewport.addEventListener) {
+        window.visualViewport.addEventListener('resize', fit);
+      }
       if (mq.addEventListener) mq.addEventListener('change', fit);
       else if (mq.addListener) mq.addListener(fit);
-      window.addEventListener('beforeprint', function () {
-        for (var i = 0; i < slides.length; i++) {
-          slides[i].style.transform = 'none';
+      if (window.addEventListener) {
+        window.addEventListener('beforeprint', function () {
+          for (var i = 0; i < slides.length; i++) setSlideTransform(slides[i], 'none');
+        });
+        window.addEventListener('afterprint', fit);
+      }
+      if (window.matchMedia) {
+        var printMq = window.matchMedia('print');
+        if (printMq.addListener) {
+          printMq.addListener(function (mql) {
+            if (mql.matches) {
+              for (var i = 0; i < slides.length; i++) setSlideTransform(slides[i], 'none');
+            } else {
+              fit();
+            }
+          });
         }
-      });
-      window.addEventListener('afterprint', fit);
+      }
 
       fit();
-      if (location.hash) go(parseHash(), { instant: true });
+      if (location.hash && !isOnepager()) go(parseHash(), { instant: true });
     })();
 
     (function () {
@@ -2214,8 +2519,16 @@
           '</svg>' +
         '</div>';
 
+      function prefersReducedMotion() {
+        return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      }
+
+      function canAnimate() {
+        return typeof Element !== 'undefined' && typeof Element.prototype.animate === 'function';
+      }
+
       function spawnClawd(x, y) {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (prefersReducedMotion() || !canAnimate()) return;
         if (document.querySelectorAll('.clawd-egg').length >= 4) return;
 
         var goRight = x < window.innerWidth * 0.55;
@@ -2234,25 +2547,37 @@
         wrap.innerHTML = CLAWD_SVG;
         document.body.appendChild(wrap);
 
-        var travel = wrap.animate([
-          { transform: 'translate(' + startX + 'px,' + startY + 'px) scale(0) rotate(-16deg)', offset: 0, easing: 'ease-out' },
-          { transform: 'translate(' + startX + 'px,' + popY + 'px) scale(1.16) rotate(7deg)', offset: 0.1, easing: 'ease-in-out' },
-          { transform: 'translate(' + startX + 'px,' + startY + 'px) scale(1) rotate(0deg)', offset: 0.18, easing: 'linear' },
-          { transform: 'translate(' + startX + 'px,' + startY + 'px) scale(1) rotate(0deg)', offset: 0.34, easing: 'cubic-bezier(0.55, 0, 1, 0.45)' },
-          { transform: 'translate(' + scrambleX + 'px,' + scrambleY + 'px) scale(1) rotate(' + spin + 'deg)', offset: 0.46, easing: 'ease-in' },
-          { transform: 'translate(' + endX + 'px,' + endY + 'px) scale(0.88) rotate(' + (spin * 1.4) + 'deg)', offset: 1 }
-        ], {
-          duration: 2100,
-          fill: 'forwards'
-        });
+        var travel;
+        try {
+          travel = wrap.animate([
+            { transform: 'translate(' + startX + 'px,' + startY + 'px) scale(0) rotate(-16deg)', offset: 0, easing: 'ease-out' },
+            { transform: 'translate(' + startX + 'px,' + popY + 'px) scale(1.16) rotate(7deg)', offset: 0.1, easing: 'ease-in-out' },
+            { transform: 'translate(' + startX + 'px,' + startY + 'px) scale(1) rotate(0deg)', offset: 0.18, easing: 'linear' },
+            { transform: 'translate(' + startX + 'px,' + startY + 'px) scale(1) rotate(0deg)', offset: 0.34, easing: 'cubic-bezier(0.55, 0, 1, 0.45)' },
+            { transform: 'translate(' + scrambleX + 'px,' + scrambleY + 'px) scale(1) rotate(' + spin + 'deg)', offset: 0.46, easing: 'ease-in' },
+            { transform: 'translate(' + endX + 'px,' + endY + 'px) scale(0.88) rotate(' + (spin * 1.4) + 'deg)', offset: 1 }
+          ], {
+            duration: 2100,
+            fill: 'forwards'
+          });
+        } catch (e) {
+          if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+          return;
+        }
 
         window.setTimeout(function () {
           wrap.classList.add('is-running');
         }, 700);
 
-        travel.onfinish = function () {
+        function cleanup() {
           if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
-        };
+        }
+        if (travel && typeof travel.addEventListener === 'function') {
+          travel.addEventListener('finish', cleanup);
+        } else if (travel) {
+          travel.onfinish = cleanup;
+        }
+        window.setTimeout(cleanup, 2300);
       }
 
       var NAV_DELAY = 1700;
@@ -2265,7 +2590,7 @@
           return;
         }
         var win = window.open(href, '_blank', 'noopener,noreferrer');
-        if (win) win.opener = null;
+        if (win) try { win.opener = null; } catch (e) {}
       }
 
       document.addEventListener('click', function (event) {
@@ -2288,7 +2613,7 @@
         spawnClawd(x, y);
 
         var isKeyboard = event.detail === 0;
-        if (isKeyboard || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (isKeyboard || prefersReducedMotion() || !canAnimate()) return;
 
         event.preventDefault();
         window.setTimeout(function () {
