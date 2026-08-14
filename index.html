@@ -424,10 +424,10 @@
   }
   .project-card {
     border-top: 1px solid var(--line);
-    padding: 22px 0 4px 0;
+    padding: 18px 0 4px 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
   }
 
   .project-header {
@@ -460,22 +460,49 @@
     letter-spacing: 0.01em;
   }
 
-  .project-desc {
-    font-size: 19px;
-    font-weight: 400;
-    color: var(--ink);
-    line-height: 1.4;
+  .project-star {
+    display: grid;
+    gap: 6px;
+    margin: 6px 0 0 0;
+  }
+  .star-row {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    column-gap: 14px;
+    align-items: start;
+  }
+  .star-row dt {
     margin: 0;
+    font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--teal);
   }
-  .project-highlights {
-    margin: 2px 0 0 0;
-    padding-left: 20px;
+  .star-row dd {
+    margin: 0;
     font-size: 17px;
-    line-height: 1.45;
+    line-height: 1.38;
     color: var(--ink);
   }
-  .project-highlights li { margin-bottom: 3px; }
-  .project-highlights li:last-child { margin-bottom: 0; }
+  .star-row--result {
+    margin-top: 4px;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+  }
+  .star-row--result dt { color: var(--gold); }
+  .star-row--result dd { font-weight: 600; }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
 
   .duration-block {
     display: flex;
@@ -965,6 +992,41 @@
     border-color: var(--teal);
     color: var(--teal);
   }
+  .theme-toggle::after,
+  .view-toggle::after {
+    content: attr(title);
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    padding: 6px 9px;
+    background: var(--navy);
+    color: var(--paper);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    white-space: nowrap;
+    border-radius: 4px;
+    box-shadow: var(--frame-shadow);
+    opacity: 0;
+    transform: translateY(-3px);
+    pointer-events: none;
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    z-index: 60;
+  }
+  .theme-toggle:hover::after,
+  .view-toggle:hover::after,
+  .theme-toggle:focus-visible::after,
+  .view-toggle:focus-visible::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (hover: none) and (pointer: coarse) {
+    .theme-toggle::after,
+    .view-toggle::after {
+      content: none;
+    }
+  }
   .theme-toggle svg,
   .view-toggle svg {
     width: 16px;
@@ -1004,16 +1066,26 @@
       padding-top: max(56px, calc(env(safe-area-inset-top, 0px) + 44px)) !important;
       padding-bottom: max(40px, env(safe-area-inset-bottom, 0px)) !important;
       background: #E8E4DC !important;
+      min-height: 100vh;
     }
+    html[data-view="onepager"] {
+      background: #E8E4DC !important;
+      min-height: 100%;
+    }
+    html[data-theme="dark"][data-view="onepager"],
     html[data-theme="dark"][data-view="onepager"] body {
       background: #0A1622 !important;
     }
     html[data-view="onepager"] #main {
       max-width: 210mm;
+      min-height: 297mm;
       margin: 0 auto;
       background: #fff;
       padding: 8mm 10mm;
       box-shadow: var(--frame-shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     html[data-view="onepager"] .slide,
     html[data-view="onepager"] .slide--dark {
@@ -1197,8 +1269,8 @@
     .duration-block { align-items: flex-start; }
     .project-duration { white-space: normal; }
     .mini-timeline { width: 100%; max-width: 320px; }
-    .project-desc { font-size: 16px; }
-    .project-highlights { font-size: 15px; }
+    .project-star { gap: 8px; }
+    .star-row dd { font-size: 16px; }
 
     .cert-cols {
       display: grid;
@@ -1289,7 +1361,7 @@
   @media print {
     @page {
       size: A4 portrait;
-      margin: 6mm 8mm;
+      margin: 8mm 9mm;
     }
 
     .skip-link,
@@ -1325,9 +1397,17 @@
       padding: 0 !important;
       margin: 0 !important;
       color: #15202B;
+      height: 100%;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
       color-adjust: exact;
+    }
+
+    #main {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100%;
     }
 
     .slide-frame {
@@ -1337,10 +1417,11 @@
       min-height: 0 !important;
       aspect-ratio: auto !important;
       padding-bottom: 0 !important;
-      margin: 0 0 6mm 0 !important;
+      margin: 0 0 3.2mm 0 !important;
       box-shadow: none !important;
       overflow: visible !important;
       background: transparent !important;
+      flex: 0 0 auto;
       page-break-after: auto;
       break-after: auto;
       page-break-inside: auto;
@@ -1416,10 +1497,10 @@
     }
 
     .headline {
-      font-size: 12pt !important;
+      font-size: 11pt !important;
       letter-spacing: -0.3px;
-      line-height: 1.15;
-      margin: 0 0 1.6mm 0 !important;
+      line-height: 1.1;
+      margin: 0 0 1.4mm 0 !important;
       color: #15202B !important;
     }
 
@@ -1512,7 +1593,7 @@
       grid-template-columns: max-content 1fr !important;
       grid-auto-rows: auto !important;
       column-gap: 4mm !important;
-      row-gap: 1.6mm !important;
+      row-gap: 1.4mm !important;
       align-items: start !important;
     }
     .intro-label {
@@ -1534,7 +1615,7 @@
     .tech-groups {
       display: flex !important;
       flex-direction: column !important;
-      gap: 1.4mm !important;
+      gap: 1.2mm !important;
       min-height: 0 !important;
     }
     .tech-group__label {
@@ -1566,7 +1647,7 @@
     }
     .project-card {
       padding: 1.2mm 0 0 0;
-      gap: 1mm !important;
+      gap: 0.7mm !important;
     }
     .project-header { gap: 2mm; }
     .project-title {
@@ -1581,28 +1662,33 @@
     .project-roles {
       font-size: 8pt;
     }
-    .project-desc {
-      font-size: 8.5pt;
-      line-height: 1.28;
+    .project-star {
+      gap: 0.35mm;
+      margin: 0.5mm 0 0 0;
     }
-    .project-highlights {
+    .star-row {
+      grid-template-columns: 4mm 1fr;
+      column-gap: 1.4mm;
+    }
+    .star-row dt { font-size: 8pt; line-height: 1.25; }
+    .star-row dd {
       font-size: 8pt;
-      line-height: 1.28;
-      padding-left: 4mm;
-      margin: 0;
+      line-height: 1.25;
     }
-    .project-highlights li { margin-bottom: 0.3mm; }
-    .project-highlights li:last-child { margin-bottom: 0; }
+    .star-row--result {
+      margin-top: 0.3mm;
+      padding-top: 0.5mm;
+    }
 
     .rec-summary {
-      font-size: 9pt;
+      font-size: 8.5pt;
       color: #5E6A75;
-      margin: 0 0 1.4mm 0 !important;
-      line-height: 1.3;
+      margin: 0 0 1.2mm 0 !important;
+      line-height: 1.28;
     }
     .rec-quote {
-      padding: 1.6mm 3mm !important;
-      gap: 0.7mm !important;
+      padding: 1.5mm 2.8mm !important;
+      gap: 0.6mm !important;
       border-left-width: 2px;
       margin: 0 !important;
       min-height: 0 !important;
@@ -1613,7 +1699,7 @@
     }
     .rec-quote__text {
       font-size: 8.5pt;
-      line-height: 1.32;
+      line-height: 1.3;
       margin: 0;
     }
     .rec-quote__from {
@@ -1627,16 +1713,14 @@
     }
     #slide-8 {
       display: flex !important;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: baseline;
-      gap: 1mm 3mm;
+      gap: 1mm 2.5mm;
       border-top: 1px solid #15202B;
       padding-top: 2mm;
       margin: 0;
       break-before: avoid;
       page-break-before: avoid;
-      break-inside: avoid;
-      page-break-inside: avoid;
     }
     .close-heading {
       font-size: 9pt;
@@ -1653,25 +1737,7 @@
       color: #5E6A75 !important;
     }
     #slide-8 .close-contacts {
-      display: block !important;
-      flex: 1 0 100%;
-      width: 100% !important;
-      margin: 0;
-      padding: 0;
-      border-top: none;
-    }
-    #slide-8 .close-contacts dt {
       display: none !important;
-    }
-    #slide-8 .close-contacts dd {
-      display: inline;
-      font-size: 8.5pt;
-      color: #15202B;
-      margin: 0;
-    }
-    #slide-8 .close-contacts dd:not(:last-of-type)::after {
-      content: "  \00b7  ";
-      color: #5E6A75;
     }
 </style>
 <script>
@@ -1692,7 +1758,7 @@
 
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-toolbar">
-  <button class="view-toggle" type="button" aria-label="Show one-pager" aria-pressed="false">
+  <button class="view-toggle" type="button" aria-label="Switch to print view" title="Switch to print view" aria-pressed="false">
     <svg class="view-toggle__page" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M7 3.5h7.5L19 8v12.5H7z"/>
       <path d="M14.5 3.5V8H19"/>
@@ -1703,7 +1769,7 @@
       <path d="M7 20.5h10"/>
     </svg>
   </button>
-  <button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+  <button class="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch to dark theme" aria-pressed="false">
     <svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M21 14.3A8.5 8.5 0 0 1 9.7 3 7 7 0 1 0 21 14.3z"/>
     </svg>
@@ -1933,7 +1999,7 @@
     <section class="slide" id="slide-4" aria-labelledby="slide-4-title">
       <div class="accent-bar"></div>
       <div class="slide-num" aria-hidden="true"></div>
-      <p class="kicker">Projects</p>
+      <p class="kicker">Projects &middot; STAR</p>
       <h2 class="headline" id="slide-4-title">Recent Projects</h2>
       <div class="head-rule"></div>
 
@@ -1952,12 +2018,24 @@
             </div>
           </header>
           <p class="project-roles">Team Lead &middot; Key Engineer</p>
-          <p class="project-desc">Enterprise document processing platform built on Databricks native services.</p>
-          <ul class="project-highlights">
-            <li>Own frontend architecture and delivery</li>
-            <li>Deliver product demos and stakeholder presentations</li>
-            <li>Ship UX improvements across the full document processing flow</li>
-          </ul>
+          <dl class="project-star">
+            <div class="star-row">
+              <dt>S<span class="sr-only">ituation</span></dt>
+              <dd>New stack: document processing on Databricks native services, not a lift of the existing product.</dd>
+            </div>
+            <div class="star-row">
+              <dt>T<span class="sr-only">ask</span></dt>
+              <dd>Own and Deliver frontend architecture and the full processing experience.</dd>
+            </div>
+            <div class="star-row">
+              <dt>A<span class="sr-only">ction</span></dt>
+              <dd>Shipped UX across the flow and ran product demos with stakeholders.</dd>
+            </div>
+            <div class="star-row star-row--result">
+              <dt>R<span class="sr-only">esult</span></dt>
+              <dd>Databricks-native UI in delivery, with stakeholders aligned on the product.</dd>
+            </div>
+          </dl>
         </article>
 
         <article class="project-card">
@@ -1973,12 +2051,24 @@
             </div>
           </header>
           <p class="project-roles">Team Lead</p>
-          <p class="project-desc">Discovery for a replacement of the legacy conversion tool at a US dealer management system provider.</p>
-          <ul class="project-highlights">
-            <li>Won the presale and secured the engagement</li>
-            <li>Led Discovery &mdash; scoped requirements and delivery timeline</li>
-            <li>Established Scrum processes, ceremonies, and stakeholder interviews</li>
-          </ul>
+          <dl class="project-star">
+            <div class="star-row">
+              <dt>S<span class="sr-only">ituation</span></dt>
+              <dd>US dealer-management provider needed to replace a legacy conversion tool.</dd>
+            </div>
+            <div class="star-row">
+              <dt>T<span class="sr-only">ask</span></dt>
+              <dd>Lead presale and Discovery to a scoped delivery plan.</dd>
+            </div>
+            <div class="star-row">
+              <dt>A<span class="sr-only">ction</span></dt>
+              <dd>Ran stakeholder interviews, scoped the timeline, and stood up Scrum.</dd>
+            </div>
+            <div class="star-row star-row--result">
+              <dt>R<span class="sr-only">esult</span></dt>
+              <dd>Won the engagement and left a Discovery baseline for delivery.</dd>
+            </div>
+          </dl>
         </article>
 
       </div>
@@ -1990,7 +2080,7 @@
     <section class="slide" id="slide-5" aria-labelledby="slide-5-title">
       <div class="accent-bar"></div>
       <div class="slide-num" aria-hidden="true"></div>
-      <p class="kicker">Projects</p>
+      <p class="kicker">Projects &middot; STAR</p>
       <h2 class="headline" id="slide-5-title">Past Projects</h2>
       <div class="head-rule"></div>
 
@@ -2009,12 +2099,24 @@
             </div>
           </header>
           <p class="project-roles">Team Lead &middot; Frontend Engineer</p>
-          <p class="project-desc">Medical document processing &mdash; classify and extract structured data from scanned and faxed clinical records.</p>
-          <ul class="project-highlights">
-            <li>Sole frontend Developer and Team Lead across the full engagement</li>
-            <li>Ran Discovery, scoped the work, and met delivery deadlines with a cross-functional team</li>
-            <li>Integrated the solution into the client&rsquo;s existing cloud infrastructure</li>
-          </ul>
+          <dl class="project-star">
+            <div class="star-row">
+              <dt>S<span class="sr-only">ituation</span></dt>
+              <dd>Healthcare client needed structured data from scanned and faxed clinical records.</dd>
+            </div>
+            <div class="star-row">
+              <dt>T<span class="sr-only">ask</span></dt>
+              <dd>Deliver the frontend into the client&rsquo;s cloud on a 9-month timeline.</dd>
+            </div>
+            <div class="star-row">
+              <dt>A<span class="sr-only">ction</span></dt>
+              <dd>Ran Discovery, built the UI, and integrated it with a cross-functional team.</dd>
+            </div>
+            <div class="star-row star-row--result">
+              <dt>R<span class="sr-only">esult</span></dt>
+              <dd>Delivered on deadline &mdash; extraction live in the client&rsquo;s infrastructure.</dd>
+            </div>
+          </dl>
         </article>
 
         <article class="project-card">
@@ -2030,13 +2132,24 @@
             </div>
           </header>
           <p class="project-roles">Team Lead &middot; Key Engineer &middot; Interviewer &middot; Mentor &middot; Presales</p>
-          <p class="project-desc">Long-running enterprise platform for document classification and data extraction, powering multiple client-facing engagements.</p>
-          <ul class="project-highlights">
-            <li>Grew from Engineer to Team Lead of a cross-functional team of 8 engineers</li>
-            <li>Key engineer on the project since almost day one</li>
-            <li>Ran technical interviews, onboarded new hires, and delivered client demos</li>
-            <li>Drove presales &mdash; discovery, solutioning, estimation, and high-level demo preparation</li>
-          </ul>
+          <dl class="project-star">
+            <div class="star-row">
+              <dt>S<span class="sr-only">ituation</span></dt>
+              <dd>Enterprise needed a reusable platform for document classification and extraction across clients.</dd>
+            </div>
+            <div class="star-row">
+              <dt>T<span class="sr-only">ask</span></dt>
+              <dd>Ship and scale the platform &mdash; engineering, delivery, and new engagements.</dd>
+            </div>
+            <div class="star-row">
+              <dt>A<span class="sr-only">ction</span></dt>
+              <dd>Key engineer from day one; later led a team of 8; ran interviews, demos, and presales.</dd>
+            </div>
+            <div class="star-row star-row--result">
+              <dt>R<span class="sr-only">esult</span></dt>
+              <dd>7+ year platform across clients; POC that retained positions and opened new revenue.</dd>
+            </div>
+          </dl>
         </article>
 
       </div>
@@ -2190,8 +2303,10 @@
         document.documentElement.setAttribute('data-theme', theme);
         try { document.documentElement.style.colorScheme = theme; } catch (e) {}
         if (button) {
+          var label = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
           button.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-          button.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+          button.setAttribute('aria-label', label);
+          button.setAttribute('title', label);
         }
       }
 
@@ -2238,8 +2353,10 @@
         document.documentElement.setAttribute('data-view', onepager ? 'onepager' : 'slides');
         if (style) style.media = onepager ? 'all' : 'print';
         if (button) {
+          var label = onepager ? 'Switch to presentation view' : 'Switch to print view';
           button.setAttribute('aria-pressed', onepager ? 'true' : 'false');
-          button.setAttribute('aria-label', onepager ? 'Show slides' : 'Show one-pager');
+          button.setAttribute('aria-label', label);
+          button.setAttribute('title', label);
         }
         if (onepager) {
           try { window.scrollTo(0, 0); } catch (e) {}
